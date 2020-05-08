@@ -16,7 +16,7 @@ def run():
         return run()
 
     elif answ == 2:
-        person = input('Enter the number of person(1-16): ')
+        person = input('Enter the number of person(01-16): ')
         predict = input('Predict: ')
 
         Model.prepare_model(person, predict)
