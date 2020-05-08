@@ -3,6 +3,7 @@ import seaborn as sns
 import pandas as pd
 from utils.dataloader import DataLoader
 import pickle
+import os
 
 from sklearn.feature_selection import RFE
 
@@ -55,10 +56,25 @@ class Model:
 
         train = pd.DataFrame(X_train)
         train['Y'] = y_train
+
+        if os.path.exists(f'../data/datasets') != True:
+            os.mkdir(f'../data/datasets')
+
+        if os.path.exists(f'../data/datasets/train') != True:
+            os.mkdir(f'../data/datasets/train')
+        if os.path.exists(f'../data/datasets/train/{predict}') != True:
+            os.mkdir(f'../data/datasets/train/{predict}')
+
         train.to_csv(f'../data/datasets/train/{predict}/{person}.csv', index=False)
 
         test = pd.DataFrame(X_test)
         test['Y'] = y_test
+
+        if os.path.exists(f'../data/datasets/test') != True:
+            os.mkdir(f'../data/datasets/test')
+        if os.path.exists(f'../data/datasets/test/{predict}') != True:
+            os.mkdir(f'../data/datasets/test/{predict}')
+
         test.to_csv(f'../data/datasets/test/{predict}/{person}.csv', index=False)
 
         classifiers = [
@@ -119,6 +135,11 @@ class Model:
         model = classifiers_dict[best_classifier]
         model.fit(X_train, y_train)
 
+        if os.path.exists('../models') != True:
+            os.mkdir('../models')
+        if os.path.exists(f'../models/{predict}') != True:
+            os.mkdir(f'../models/{predict}')
+
         with open(f'../models/{predict}/{person}.pickle', 'wb')as f:
             pickle.dump(model, f)
 
@@ -144,9 +165,10 @@ class Model:
 
         pred = loaded_model.predict(test_X)
 
-        result['Accuracy'] = accuracy_score(test_y, pred)
+
         result['Confution Matrix'] = confusion_matrix(test_y, pred)
         result['Classification Report'] = classification_report(test_y, pred)
+        result['Accuracy'] = accuracy_score(test_y, pred)
 
         if predict == 'result':
             ans = {
@@ -158,7 +180,8 @@ class Model:
             test_y =  [ans[x] for x in list(test_y)]
             pred = [ans[x] for x in list(pred)]
 
-        result['Correct answers'] = test_y
-        result['Predicted answers'] = pred
+        result['Correct answers'] = list(test_y)
+        result['Predicted answers'] = list(pred)
+        print('\n')
 
         return result
