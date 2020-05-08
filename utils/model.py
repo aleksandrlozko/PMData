@@ -119,7 +119,6 @@ class Model:
         model = classifiers_dict[best_classifier]
         model.fit(X_train, y_train)
 
-        #need to wait
         with open(f'../models/{predict}/{person}.pickle', 'wb')as f:
             pickle.dump(model, f)
 
@@ -145,10 +144,21 @@ class Model:
 
         pred = loaded_model.predict(test_X)
 
-        result['Correct answers'] = list(test_y)
-        result['Predicted answers'] = list(pred)
         result['Accuracy'] = accuracy_score(test_y, pred)
         result['Confution Matrix'] = confusion_matrix(test_y, pred)
         result['Classification Report'] = classification_report(test_y, pred)
+
+        if predict == 'result':
+            ans = {
+                0: 'Without changes',
+                1: 'Descrease',
+                2: 'Increase'
+            }
+
+            test_y =  [ans[x] for x in list(test_y)]
+            pred = [ans[x] for x in list(pred)]
+
+        result['Correct answers'] = test_y
+        result['Predicted answers'] = pred
 
         return result
