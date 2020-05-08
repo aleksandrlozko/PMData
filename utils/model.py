@@ -37,7 +37,7 @@ class Model:
                                        path_distance=f'../data/p{person}/fitbit/distance.json', path_calories=f'../data/p{person}/fitbit/calories.json')
 
         Y = main[predict]
-        main.drop([predict], axis=1)
+        main = main.drop([predict], axis=1)
         X = main
 
         n = round(len(X) * 0.7)
@@ -46,7 +46,17 @@ class Model:
         model = LogisticRegression(max_iter=3000)
         rfe = RFE(model, 3)
         rfe = rfe.fit(X, Y)
+        ranking = rfe.ranking_
         X_new = rfe.fit_transform(X, Y)
+
+        position = list()
+        for index in range(len(ranking)):
+            if ranking[index] == 1:
+                position.append(index)
+        category = list()
+        for index in position:
+            category.append(X.columns[index])
+        print('Category that affect most: ', category)
 
         #separation into train and test samples
         X_train = X_new[:n]
