@@ -61,6 +61,7 @@ class DataLoader:
         reporting['alcohol_consumed'] = reporting['alcohol_consumed'].apply(lambda x: 1 if x == 'Yes' else 0)
 
         reporting['yesterday_weight'] = 0
+        reporting['yesterday_weight'] = reporting['yesterday_weight'].astype('float64')
         reporting['result'] = 0
         for line in range(len(reporting)):
             line_previous = line
@@ -74,7 +75,6 @@ class DataLoader:
             else:
                 reporting.loc[line, ('result')] = 0
 
-        reporting['yesterday_weight'] = reporting['yesterday_weight'].astype('float64')
         reporting = reporting.drop(['timestamp', 'meals', 'weight'], axis=1)
         reporting[['yesterday_weight', 'glasses_of_fluid']] = preprocessing.scale(reporting[['yesterday_weight', 'glasses_of_fluid']])
 
@@ -205,7 +205,9 @@ class DataLoader:
             else:
                 calories_distance.loc[line, ('centimeter_norm')] = 5
 
-        calories_distance = calories_distance.drop(['distance', 'calories'], axis=1)
+        calories_distance = calories_distance.drop(['distance'], axis=1)
 
         return calories_distance
+
+
 
